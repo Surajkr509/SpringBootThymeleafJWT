@@ -1,0 +1,149 @@
+<html xmlns:th="https://thymeleaf.org">
+<head>
+<title>BR</title>
+<link rel="icon" type="image/x-icon" th:href="@{image/users-chart.jpg}">
+<link href="css/style.css" type="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style>
+#loginHeading {
+	color: lightblue;
+	text-align: center;
+}
+
+.formhead {
+	margin-top: 150px;
+}
+
+.error {
+	color: red;
+}
+ .test + .tooltip.right > .tooltip-arrow {
+    border-right: 5px solid black;
+  }
+</style>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-3"></div>
+			<div class="col-sm-6 formhead ">
+				<h1 class="mystyle" id="loginHeading">SignUp</h1>
+				
+				 <div th:if="${successMessage}" class="alert alert-success"
+        role="alert" th:text=${successMessage}>
+        </div>
+				<form th:action="@{/admin/createUser}" method="POST" th:object="${admin}">
+					<div class="form-group">
+						<label for="username">User Name:</label> <input type="text"
+							name="username" class="form-control" id="username"
+							placeholder="Enter username">
+							 <span th:if="${#fields.hasErrors('username')}" th:errorclass="error" th:errors="*{username}"
+							 data-toggle="tooltip" data-placement="right" title="*{username}">?</span>
+					</div>
+					<div class="form-group">
+						<label for="mob">Mob:</label> <input type="text" name="mob"
+							class="form-control" id="mob" placeholder="Enter mobile">
+						<span th:if="${#fields.hasErrors('mob')}" th:errorclass="error" th:errors="*{mob}"></span>
+
+					</div>
+					<div class="form-group">
+						<label for="userpassword">User Password:</label> <input
+							type="text" name="userpassword" class="form-control"
+							id="userpassword" placeholder="Enter your password"> 
+							<span th:if="${#fields.hasErrors('userpassword')}" th:errorclass="error" th:errors="*{userpassword}"></span>
+					</div>
+					<div class="form-group">
+						<label for="email">Email:</label> <input type="text" name="email"
+							class="form-control" id="email" placeholder="Enter your email">
+						<span th:if="${#fields.hasErrors('email')}" th:errorclass="error" th:errors="*{email}"></span>
+					</div>
+					<button type="submit" class="btn btn-primary btn-block">Submit</button>
+					 <a href="./login">Click here to Login</a>
+				</form>
+			</div>
+			<div class="col-sm-3"></div>
+		</div>
+	</div>
+</body>
+<script
+	src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+
+<script>
+	function signUp(adm) {
+		var username = $("#username").val();
+		var mob = $("#mob").val();
+		var userpassword = $("#userpassword").val();
+		var email = $("#email").val();
+		var mnlen = 3;
+		var mxlen = 20;
+		var checkval = 1;
+
+		/* if(username ==""){
+			$("#errorusername").text("Please Enter Username");
+			checkval=0;
+		}
+		else if (username.length<mnlen || username.length>mxlen){
+			$("#errorusername").text("Please input the username between " +mnlen+ " and " +mxlen+ " characters");
+			checkval=0;
+		} */
+		if (mob == '') {
+			$("#errormob").text("Please Enter Mobile Number");
+			checkval = 0;
+		}
+		if (userpassword == '') {
+			$("#erroruserpassword").text("Please Enter Password");
+			checkval = 0;
+		}
+		if (email == '') {
+			$("#erroremail").text("Please Enter the Email");
+			checkval = 0;
+		} else if (checkEmail(email) == true) {
+
+		}
+		if (checkval == 1) {
+
+			$.ajax({
+				type : "POST",
+				url : "./createUser",
+				data : {
+					username : $("#username").val(),
+					mob : $("#mob").val(),
+					userpassword : $("#userpassword").val(),
+					email : $("#email").val()
+
+				},
+				success : function(data) {
+					console.log("success" + data);
+					window.location.href = "./login"
+				},
+				fail : function(data) {
+					console.log("fail" + data);
+				}
+			});
+		}
+	}
+
+	function checkEmail(email) {
+		var email = $('#email').val();
+		$.ajax({
+			type : "GET",
+			url : "./checkEmail/" + email,
+			success : function(data) {
+				if (data == true) {
+					$("#erroremail").text("Email Already Exist");
+				}
+			},
+			fail : function(data) {
+				console.log(data);
+			}
+		});
+	}
+</script>
+</html>

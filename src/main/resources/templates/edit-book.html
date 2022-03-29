@@ -1,0 +1,55 @@
+<html>
+  <head>
+  <title>BR</title>
+	<link rel="icon" type="image/x-icon" th:href="@{image/users-chart.jpg}">
+	<link href="css/style.css" type="stylesheet">
+  	<meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+   <style>
+	#loginHeading {
+	color:lightblue;
+	text-align:center;
+	background: black;
+	}
+	.formhead{
+	margin-top:150px;
+	}
+	</style>
+   </head>
+  <body>
+  	<div class="container">
+  	<div class="row">
+  	<div class="col-sm-3">
+  	</div>
+  	<div class="col-sm-6 formhead ">
+  	<h1 class="mystyle" id="loginHeading" >Edit Book</h1>
+    <form action="../update" method="post">
+    <div class="form-group" style="display:none">
+    <label for="bookName">Book ID:</label>
+      <input type="text" th:field="*{bookinfo.id}" name="id" class="form-control" id="bookId" required placeholder="Enter book id">
+    </div>
+    <div class="form-group">
+    <label for="bookName">Book Name:</label>
+      <input type="text" th:field="*{bookinfo.bookName}" name="bookName" class="form-control" id="bookName"required placeholder="Enter bookname">
+    </div>
+    <div class="form-group">
+    <label for="author">Author:</label>
+      <input type="text" th:field="*{bookinfo.author}" name="author" class="form-control" id="author"required placeholder="Enter authorname">
+    </div>
+    <div class="form-group">
+    <label for="yearOfPublished">Year Of Published:</label>
+    <input type="text" th:field="*{bookinfo.yearOfPublished}" name="yearOfPublished"class="form-control"id="yearOfPublished"required
+    placeholder="Enter year Of published">
+    </div>
+    <button type="submit" class="btn btn-primary btn-block" >Submit</button>
+    </form>
+  	</div>
+  	<div class="col-sm-3">
+  	</div>
+  	</div>
+    </div>
+    </body>
+    </html>

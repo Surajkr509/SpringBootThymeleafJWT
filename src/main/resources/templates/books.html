@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Books</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style>
+.navbar-inverse {
+	border-radius: 0px;
+}
+
+#customers {
+	font-family: Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#customers td, #customers th {
+	border: 1px solid #ddd;
+	padding-top: 10px;
+}
+
+#customers .noPadding {
+	padding-top: 5px;
+}
+
+#customers tr:hover {
+	background-color: #ddd;
+}
+
+#customers th {
+	text-align: center;
+	background-color: rgb(0, 0, 0);
+	color: white;
+}
+
+.style {
+	width: 100%;
+}
+
+.btn-add {
+	color: #fff;
+	background-color: rgba(255, 255, 255, 0.9);
+	border-color: #0d0d0e;
+}
+
+.btn-view {
+	color: #fff;
+	background-color: #0c4e86;
+	border-color: #2e6da4;
+}
+
+.btn-edit {
+	color: #fff;
+	background-color: #377337;
+	border-color: #4cae4c;
+}
+
+.btn-delete {
+	color: #fff;
+	background-color: #ae1410;
+	border-color: #d43f3a;
+}
+
+.btn {
+	height: 25px;
+	margin: 0px;
+	padding: 0px;
+	padding-top: 2px;
+}
+
+.pagiBtn {
+	width: 25px;
+	margin-left: 2px;
+	margin-right: 2px;
+	color: 2e6da4;
+	font-weight: bold;
+	background: white;
+}
+
+.pageCurrent {
+	color: white;
+	background: #2e6da4;
+}
+
+.modal-footer {
+	text-align: center;
+	background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-body {
+	position: relative;
+	padding: 0;
+}
+.infoModal {
+	margin: 0px;
+	padding: 15px;
+	text-align: center;
+	background-color: rgba(0, 0, 0, 0.8);
+	color:white;
+}
+</style>
+</head>
+<body>
+	<script>
+		function populate(book) {
+
+			$("#toFillBookName").html(book.bookName);
+			$("#toFillAuthor").html(book.author);
+			$("#toFillYear").html(book.yearOfPublished);
+
+		}
+
+		function getBook(id) {
+			$.ajax({
+				type : "GET",
+				url : "./books/get/" + id,
+				success : function(data) {
+					populate(data);
+				},
+				fail : function(data) {
+					console.log("fail", data);
+				}
+			});
+
+		}
+
+		function info(book) {
+			console.log(book);
+			$("#toEditBookName").val(book.bookName);
+			$("#toEditAuthor").val(book.author);
+			$("#toEditYear").val(book.yearOfPublished);
+
+		}
+
+		function updateCurrentBook(book) {
+			console.log(book.id);
+			$("#bookName" + book.id).html(book.bookName);
+			$("#author" + book.id).html(book.author);
+			$("#year" + book.id).html(book.yearOfPublished);
+
+		}
+
+		currentBook = {};
+		function editBook(id) {
+			$.ajax({
+				type : "GET",
+				url : "./books/get/" + id,
+				success : function(data) {
+					info(data);
+					currentBook = data;
+				},
+				fail : function(data) {
+					console.log("fail", data);
+				}
+			});
+
+		}
+		function updateBook() {
+			var id = currentBook.id;
+			$.ajax({
+				type : "POST",
+				url : "./books/update/" + id,
+				data : {
+					bookName : $("#toEditBookName").val(),
+					author : $("#toEditAuthor").val(),
+					yearOfPublished : $("#toEditYear").val()
+				},
+				success : function(data) {
+					updateCurrentBook(data);
+					$("#infoModalOpener").click();
+					setInterval(function(){
+						$("#infoModal").modal('hide');
+					},1000);
+				},
+				fail : function(data) {
+					console.log("fail", data);
+				}
+			});
+
+		}
+		/* 	function bookList(data) {
+				$.ajax({
+					type : "GET",
+					url : "./books/bookList",
+					success : function(data) {
+						console.log(data);
+					},
+					fail : function(data) {
+						console.log("fail", data);
+					}
+				});
+
+			}
+		 */
+		/* function bookdetail(book) {
+			console.log(book);
+			$("#toAddBookName").html(book.bookName);
+			$("#toAddAuthor").html(book.author);
+			$("#toAddYear").html(book.yearOfPublished);
+
+		} */
+		function add(books) {
+			var msg = "Added";
+			$.ajax({
+				type : "POST",
+				url : "./books/add",
+				data : {
+					bookName : $("#toAddBookName").val(),
+					author : $("#toAddAuthor").val(),
+					yearOfPublished : $("#toAddYear").val()
+				},
+				success : function(data) {
+					$("#messageModalOpener").click();
+					setInterval(function() {
+						window.location.href = "./books";
+					}, 1000);
+				},
+				fail : function(data) {
+					console.log("fail", data);
+				}
+			});
+
+		}
+
+		function resetWithPageSize() {
+			var pageSize = document.getElementById("pageSizer").value;
+			window.location = "books?pageSize=" + pageSize;
+		}
+	</script>
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target="#myNavbar">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#"><b>BMS</b></a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav">
+					<li><a href="./admin/home">Home</a></li>
+					<li class="active"><a href="books">Books</a></li>
+					<li><a href="#">Music</a></li>
+					<li><a href="#">Movies</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#"><span class="glyphicon glyphicon-user"></span>
+					</a></li>
+					<li><a href="login"><span
+							class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="row">
+		<div class="col-sm-2"></div>
+		<div class="col-sm-8">
+			<h3>
+				<b>Books List</b>
+			</h3>
+			<div class="row">
+				<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10"
+					style="padding-top: 50px;">
+					<caption>
+						Showing page <span th:text="${pageNumber}+1"></span> of <span
+							th:text="${totalPages}"></span> for <span
+							th:text="${ totalElements }"></span> items.
+					</caption>
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+					<div class="form-group">
+						<label for="pageSize">Page Size:</label> <select name="pageSize"
+							class="form-control" id="pageSizer"
+							th:onchange="resetWithPageSize()">
+							<option th:each="option : ${pageSizes}" th:text="${option}"
+								th:selected="${option == pageSize}">option</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<table id="customers" class="table table-condensed">
+				<tr>
+					<th>Sl.No</th>
+					<th>Book Name</th>
+					<th>Author</th>
+					<th>Year Of Published</th>
+					<!-- <th colspan="3" class="noPadding"><a type="button"
+						class="btn btn btn-add" href="books/new"
+						style="width: 100%; color: black;">Add Books</a></th> -->
+					<th colspan="3" class="noPadding"><a type="button"
+						class="view btn btn btn-add" data-toggle="modal"
+						data-target="#add" style="width: 100%; color: black;">Add
+							Books</a></th>
+				</tr>
+				<tr th:each="book, index: ${booklist}">
+					<td style="text-align: center"
+						th:text="${index.count} + ((${pageNumber})*${pageSize})" />
+					<td style="text-align: center" th:text="${book.bookName}"
+						th:id="'bookName' + ${book.id}" />
+					<td style="text-align: center" th:text="${book.author}"
+						th:id="'author' + ${book.id}" />
+					<td style="text-align: center" th:text="${book.yearOfPublished}"
+						th:id="'year' + ${book.id}" />
+
+					<td class="noPadding"><a type="button"
+						class="view btn btn btn-view" data-toggle="modal"
+						data-target="#myModal" th:id="${book.id}"
+						onclick="getBook(this.id)" style="width: 100%">View</a></td>
+
+					<!-- 
+					<td class="noPadding"><a type="button"
+						class="view btn btn btn-view"
+						th:href="@{/books/view/{id}(id=${book.id})}" style="width: 100%">View</a></td>
+					 -->
+					<td class="noPadding"><a type="button"
+						class="view btn btn btn-edit" data-toggle="modal"
+						data-target="#myEdit" th:id="${book.id}"
+						onclick="editBook(this.id)" style="width: 100%">Edit</a></td>
+					<!-- <td class="noPadding"><a type="button"
+						class="edit btn btn btn-edit"
+						th:href="@{/books/edit/{id}(id=${book.id})}" style="width: 100%">Edit</a></td>
+						 -->
+					<td class="noPadding"><a type="button"
+						class="delete btn btn btn-delete"
+						th:href="@{/books/{id}(id=${book.id})}" style="width: 100%">Delete</a></td>
+				</tr>
+				<tr>
+					<td style="padding: 2px"><a type="button" class="btn btn-view"
+						th:if="${pageNumber > 0}"
+						th:href="@{/books?pageNo={pNo}&pageSize={pSize}&sortBy={sBy}&sortDirection={sDir}(pNo=${pageNumber}-1, pSize=${pageSize}, sBy=${sortBy}, sDir=${sortDirection})}"
+						style="width: 100%"> << Prev</a></td>
+					<td style="padding: 2px; text-align: center;" colspan="5"><a
+						type="button" class="btn pagiBtn" th:each="p: ${pages}"
+						th:text="${p}+1"
+						th:classappend="${p==pageNumber} ? pageCurrent : pagiBtn"
+						th:href="@{/books?pageNo={pNo}&pageSize={pSize}&sortBy={sBy}&sortDirection={sDir}(pNo=${p}, pSize=${pageSize}, sBy=${sortBy}, sDir=${sortDirection})}"></a>
+					</td>
+					<td style="padding: 2px"><a type="button" class="btn btn-view"
+						th:if="${pageNumber < (totalPages - 1)} "
+						th:href="@{/books?pageNo={pNo}&pageSize={pSize}&sortBy={sBy}&sortDirection={sDir}(pNo=${pageNumber}+1, pSize=${pageSize}, sBy=${sortBy}, sDir=${sortDirection})}"
+						style="width: 100%"> Next >> </a></td>
+				</tr>
+			</table>
+		</div>
+		<div class="col-sm-2"></div>
+	</div>
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- View content-->
+			<div class="modal-content" style="border-radius: 0px; padding: 0px;">
+				<div class="modal-header"
+					style="background-color: rgba(0, 0, 0, 0.8)">
+					<button type="button" class="close" data-dismiss="modal"
+						style="color: white; border: 1px solid white;">X</button>
+					<h4 class="modal-title"
+						style="background-color: transparent; color: white; text-align: center;">Book
+						Info</h4>
+				</div>
+				<div class="modal-body" style="padding: 50px;">
+
+
+
+					<table class="table table-condensed">
+						<tbody>
+							<tr>
+								<th style="width: 150px;">Book Name</th>
+								<td id="toFillBookName"></td>
+							</tr>
+							<tr>
+								<th style="width: 150px;">Author</th>
+								<td id="toFillAuthor"></td>
+							</tr>
+							<tr>
+								<th style="width: 150px;">Publishing Year</th>
+								<td id="toFillYear"></td>
+							</tr>
+						</tbody>
+
+					</table>
+				</div>
+				<div class="modal-footer"
+					style="margin: 0px; padding: 10px; background: rgba(0, 0, 0, 0.8)">
+					<button type="button" class="btn btn-delete btn-add"
+						style="width: 100px; height: 30px;" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<div class="modal fade" id="myEdit" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Edit Content-->
+			<div class="modal-content" style="border-radius: 0px; padding: 0px;">
+				<div class="modal-header"
+					style="background-color: rgba(0, 0, 0, 0.8)">
+					<button type="button" class="close" data-dismiss="modal"
+						style="color: white; border: 1px solid white;">X</button>
+					<h4 class="modal-title"
+						style="background-color: transparent; color: white; text-align: center;">Edit
+						Book</h4>
+				</div>
+				<div class="modal-body" style="padding: 50px;">
+
+
+
+					<table class="table table-condensed">
+						<tbody>
+							<tr>
+								<th style="width: 150px;">Book Name</th>
+								<td><input type="text" required
+									placeholder="Enter bookname" id="toEditBookName"></td>
+							</tr>
+							<tr>
+								<th style="width: 150px;">Author</th>
+								<td><input type="text" required placeholder="Enter author"
+									id="toEditAuthor"></td>
+							</tr>
+							<tr>
+								<th style="width: 150px;">Publishing Year</th>
+								<td><input type="text" required placeholder="Enter year"
+									id="toEditYear"></td>
+							</tr>
+						</tbody>
+
+					</table>
+				</div>
+				<div class="modal-footer"
+					style="margin: 0px; padding: 10px; background: rgba(0, 0, 0, 0.8)">
+					<button type="button" class="btn btn-delete btn-add"
+						style="width: 100px; height: 30px;" onclick="updateBook()"
+						data-dismiss="modal">Submit</button>
+						<button style="display: none" id="infoModalOpener"
+						data-toggle="modal" data-target="#infoModal">showsuccessMessagge</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<div class="modal fade" id="add" role="dialog">
+		<div class="modal-dialog">
+			<!-- Add Content-->
+			<div class="modal-content" style="border-radius: 0px; padding: 0px;">
+				<div class="modal-header"
+					style="background-color: rgba(0, 0, 0, 0.8)">
+					<button type="button" class="close" data-dismiss="modal"
+						style="color: white; border: 1px solid white;">X</button>
+					<h4 class="modal-title"
+						style="background-color: transparent; color: white; text-align: center;">Add
+						Book</h4>
+				</div>
+				<div class="modal-body" style="padding: 50px;">
+					<table class="table table-condensed">
+						<tbody>
+							<tr>
+								<th style="width: 150px;">Book Name</th>
+								<td><input type="text" required
+									placeholder="Enter bookname" id="toAddBookName"></td>
+							</tr>
+							<tr>
+								<th style="width: 150px;">Author</th>
+								<td><input type="text" required placeholder="Enter author"
+									id="toAddAuthor"></td>
+							</tr>
+							<tr>
+								<th style="width: 150px;">Publishing Year</th>
+								<td><input type="text" required placeholder="Enter year"
+									id="toAddYear"></td>
+							</tr>
+						</tbody>
+
+					</table>
+				</div>
+				<div class="modal-footer"
+					style="margin: 0px; padding: 10px; background: rgba(0, 0, 0, 0.8)">
+					<button type="button" class="btn btn-delete btn-add"
+						style="width: 100px; height: 30px;" onclick="add()"
+						data-dismiss="modal">Add</button>
+					<button style="display: none" id="messageModalOpener"
+						data-toggle="modal" data-target="#messageModal">showsuccessMessagge</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="messageModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content" style="margin: 0px; padding: 10px;background-color:rgba(0, 0, 0, 0.8); color: white; text-align: center;" >
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						onclick="window.location.href='./books'">&times;</button>
+					<h4 class="modal-title">Book Added Successfully</h4>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="infoModal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content" style="margin: 0px; padding: 10px;background-color:rgba(0, 0, 0, 0.8); color: white; text-align: center;">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						onclick="window.location.href='./books'">&times;</button>
+					<h4 class="modal-title">Book Edited Successfully</h4>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
