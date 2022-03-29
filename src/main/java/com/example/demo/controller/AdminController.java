@@ -40,7 +40,6 @@ public class AdminController {
 
 	@PostMapping("/testUser")
 	public ResponseEntity<?> testUser(@RequestBody JwtRequest reqData) {
-		System.out.println("Test:::::::::::::::::::::::");
 		try {
 			Optional<Admin> existData = adminRepository.findByEmail(reqData.getEmail());
 			if (existData.isPresent()) {
